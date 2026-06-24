@@ -1,0 +1,458 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Plano de Aporte — Camilla & Elvis</title>
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;500;600;700&family=DM+Sans:wght@300;400;500;600&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    :root {
+      --bg-deep: #0A0C1A;
+      --bg-card: #0F1225;
+      --bg-elevated: #141728;
+      --navy: #1E2761;
+      --gold: #C9A84C;
+      --gold-light: #E8C97A;
+      --text-primary: #F0EDE6;
+      --text-muted: #8B8FA8;
+      --success: #4CAF8C;
+      --warning: #E8A83C;
+      --danger: #E85C4A;
+      --border: rgba(201,168,76,0.15);
+    }
+    body {
+      background: var(--bg-deep);
+      color: var(--text-primary);
+      font-family: "DM Sans", sans-serif;
+      line-height: 1.6;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    /* PASSWORD */
+    #password-overlay {
+      position: fixed; top:0; left:0; width:100%; height:100%;
+      background: var(--bg-deep); z-index: 9999;
+      display: flex; align-items: center; justify-content: center;
+    }
+    .pwd-box { text-align: center; padding: 2rem; }
+    .pwd-logo { font-family: "Playfair Display", serif; font-size: 1.5rem; color: var(--gold); margin-bottom: 0.5rem; }
+    .pwd-sub { font-size: 0.85rem; color: var(--text-muted); margin-bottom: 2rem; }
+    #pwd-input {
+      background: var(--bg-elevated);
+      border: 1px solid rgba(201,168,76,0.3);
+      color: var(--text-primary);
+      padding: 0.75rem 1.25rem; border-radius: 8px;
+      font-family: "DM Sans", sans-serif; font-size: 1rem;
+      width: 260px; outline: none; text-align: center;
+    }
+    .pwd-btn {
+      display: block; margin: 1rem auto 0;
+      background: linear-gradient(135deg, #C9A84C, #E8C97A);
+      color: #0A0C1A; border: none;
+      padding: 0.75rem 2rem; border-radius: 8px;
+      font-family: "DM Sans", sans-serif; font-weight: 600;
+      font-size: 1rem; cursor: pointer;
+    }
+    #pwd-error { color: var(--danger); font-size: 0.85rem; margin-top: 1rem; display: none; }
+
+    /* LAYOUT */
+    #main-content { display: none; }
+    .section {
+      max-width: 860px; margin: 0 auto;
+      padding: 5rem 2rem;
+      border-bottom: 1px solid var(--border);
+    }
+    .section-label {
+      font-size: 0.7rem; letter-spacing: 0.2em;
+      text-transform: uppercase; color: var(--gold); margin-bottom: 0.75rem;
+    }
+    .section-title {
+      font-family: "Playfair Display", serif;
+      font-size: clamp(1.75rem, 4vw, 2.5rem);
+      font-weight: 400; color: var(--text-primary);
+      margin-bottom: 0.5rem; line-height: 1.2;
+    }
+    .section-sub {
+      color: var(--text-muted); font-size: 0.95rem;
+      margin-bottom: 2.5rem; max-width: 600px; line-height: 1.75;
+    }
+    .divider {
+      width: 48px; height: 2px;
+      background: linear-gradient(90deg, var(--gold), transparent);
+      margin: 1rem 0 2rem;
+    }
+
+    /* HERO */
+    .hero {
+      min-height: 100vh; display: flex; flex-direction: column;
+      justify-content: center; align-items: center;
+      text-align: center; padding: 4rem 2rem;
+      background:
+        radial-gradient(ellipse at 50% 0%, rgba(30,39,97,0.45) 0%, transparent 65%),
+        radial-gradient(ellipse at 80% 80%, rgba(201,168,76,0.06) 0%, transparent 55%);
+    }
+    .hero-eyebrow {
+      font-size: 0.72rem; letter-spacing: 0.22em;
+      text-transform: uppercase; color: var(--gold); margin-bottom: 1.5rem;
+    }
+    .hero-name {
+      font-family: "Playfair Display", serif;
+      font-size: clamp(2.8rem, 7vw, 5.5rem);
+      font-weight: 400; color: var(--text-primary);
+      margin: 0 0 1rem; line-height: 1.05;
+    }
+    .hero-meta { font-size: 0.83rem; color: var(--text-muted); margin-bottom: 2rem; }
+    .hero-statement {
+      font-size: 1.05rem; color: var(--text-muted);
+      max-width: 560px; line-height: 1.8;
+    }
+    .hero-badge {
+      margin-top: 2.5rem;
+      display: inline-block;
+      background: rgba(201,168,76,0.1);
+      border: 1px solid rgba(201,168,76,0.3);
+      color: var(--gold); font-size: 0.78rem;
+      padding: 0.5rem 1.4rem; border-radius: 20px;
+      letter-spacing: 0.08em;
+    }
+
+    /* APORTE DESTAQUE */
+    .aporte-destaque {
+      background: linear-gradient(135deg, rgba(201,168,76,0.07), rgba(30,39,97,0.18));
+      border: 1px solid rgba(201,168,76,0.22);
+      border-radius: 18px; padding: 2.5rem 2rem;
+      text-align: center; margin-bottom: 2.5rem;
+    }
+    .aporte-label { font-size: 0.7rem; text-transform: uppercase; letter-spacing: 0.18em; color: var(--gold); margin-bottom: 0.6rem; }
+    .aporte-valor { font-family: "DM Mono", monospace; font-size: 3.2rem; color: var(--gold); font-weight: 500; line-height: 1; }
+    .aporte-sub { font-size: 0.88rem; color: var(--text-muted); margin-top: 0.6rem; }
+
+    /* SEPARADOR DE BLOCO */
+    .bloco-header {
+      display: flex; align-items: center; gap: 1rem;
+      margin: 2.25rem 0 1rem;
+    }
+    .bloco-header-label {
+      font-size: 0.68rem; text-transform: uppercase;
+      letter-spacing: 0.18em; color: var(--text-muted);
+      white-space: nowrap;
+    }
+    .bloco-header-line { flex: 1; height: 1px; background: var(--border); }
+
+    /* CARDS */
+    .ativos-grid { display: flex; flex-direction: column; gap: 1rem; }
+
+    .ativo-card {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      padding: 1.5rem 1.75rem;
+      display: grid;
+      grid-template-columns: auto 1fr auto;
+      align-items: center;
+      gap: 1.25rem;
+    }
+    .ativo-num {
+      font-family: "DM Mono", monospace;
+      font-size: 0.78rem; color: var(--text-muted);
+      background: var(--bg-elevated);
+      width: 32px; height: 32px; border-radius: 50%;
+      display: flex; align-items: center; justify-content: center;
+      flex-shrink: 0;
+    }
+    .ativo-classe-badge {
+      display: inline-block;
+      font-size: 0.63rem; font-weight: 600;
+      text-transform: uppercase; letter-spacing: 0.1em;
+      padding: 0.2rem 0.65rem; border-radius: 20px;
+      margin-bottom: 0.45rem;
+    }
+    .classe-projeto { background: rgba(201,168,76,0.1); color: var(--gold); border: 1px solid rgba(201,168,76,0.22); }
+    .classe-int     { background: rgba(76,175,140,0.12); color: var(--success); border: 1px solid rgba(76,175,140,0.25); }
+
+    .ativo-ticker {
+      font-family: "Playfair Display", serif;
+      font-size: 1.12rem; color: var(--text-primary); font-weight: 500;
+    }
+    .ativo-nome { font-size: 0.78rem; color: var(--text-muted); margin-top: 0.1rem; }
+    .ativo-desc { font-size: 0.8rem; color: var(--text-muted); margin-top: 0.5rem; line-height: 1.55; }
+    .ativo-onde { font-size: 0.7rem; color: var(--text-muted); margin-top: 0.5rem; }
+
+    .ativo-right { text-align: right; flex-shrink: 0; }
+    .ativo-valor { font-family: "DM Mono", monospace; font-size: 1.3rem; color: var(--gold); font-weight: 500; }
+    .ativo-pct { font-size: 0.72rem; color: var(--text-muted); margin-top: 0.2rem; }
+
+    /* PROGRESS BAR DO PROJETO */
+    .projeto-progress { margin-top: 0.85rem; }
+    .progress-track {
+      height: 5px; border-radius: 99px;
+      background: var(--bg-elevated); overflow: hidden; margin-bottom: 0.4rem;
+    }
+    .progress-fill {
+      height: 100%; border-radius: 99px;
+      background: linear-gradient(90deg, var(--gold), var(--gold-light));
+    }
+    .progress-labels {
+      display: flex; justify-content: space-between;
+      font-size: 0.7rem; color: var(--text-muted);
+    }
+    .progress-labels span:first-child { color: var(--gold); }
+
+    /* BARRA RESUMO */
+    .barra-card {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: 14px; padding: 1.5rem 1.75rem;
+      margin-top: 2rem;
+    }
+    .barra-titulo { font-size: 0.7rem; text-transform: uppercase; letter-spacing: 0.12em; color: var(--text-muted); margin-bottom: 1rem; }
+    .barra-track { height: 8px; border-radius: 99px; background: var(--bg-elevated); overflow: hidden; display: flex; }
+    .barra-seg { height: 100%; }
+    .barra-legenda { display: flex; flex-wrap: wrap; gap: 0.75rem 1.75rem; margin-top: 1rem; }
+    .barra-item { font-size: 0.75rem; color: var(--text-muted); display: flex; align-items: center; gap: 0.4rem; }
+    .barra-dot { width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0; }
+
+    .total-box {
+      background: var(--bg-elevated);
+      border-radius: 10px; padding: 1rem 1.5rem;
+      display: flex; justify-content: space-between; align-items: center;
+      margin-top: 1.5rem;
+    }
+    .total-box-label { font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.1em; color: var(--text-muted); }
+    .total-box-valor { font-family: "DM Mono", monospace; font-size: 1.2rem; color: var(--gold); font-weight: 500; }
+
+    /* FOOTER */
+    .footer { text-align: center; padding: 4rem 2rem; }
+    .footer-logo {
+      width: 48px; height: 48px; border-radius: 50%;
+      background: linear-gradient(135deg, var(--gold), var(--gold-light));
+      color: #0A0C1A; font-family: "Playfair Display", serif;
+      font-size: 1.1rem; font-weight: 600;
+      display: flex; align-items: center; justify-content: center;
+      margin: 0 auto 1rem;
+    }
+    .footer-name { font-family: "Playfair Display", serif; font-size: 1.15rem; color: var(--text-primary); }
+    .footer-title { font-size: 0.8rem; color: var(--text-muted); margin: 0.25rem 0 0.35rem; }
+    .footer-brand { font-size: 0.78rem; color: var(--gold); margin-bottom: 0.75rem; }
+    .footer-disclaimer {
+      font-size: 0.7rem; color: var(--text-muted);
+      max-width: 500px; margin: 1.5rem auto 0; line-height: 1.65;
+    }
+
+    @media (max-width: 600px) {
+      .section { padding: 3rem 1.25rem; }
+      .ativo-card { grid-template-columns: auto 1fr; }
+      .ativo-right { grid-column: 2; text-align: left; margin-top: 0.5rem; }
+      .aporte-valor { font-size: 2.4rem; }
+    }
+  </style>
+</head>
+<body>
+
+<!-- PASSWORD -->
+<div id="password-overlay">
+  <div class="pwd-box">
+    <div class="pwd-logo">Planejamento Financeiro</div>
+    <div class="pwd-sub">Camilla &amp; Elvis &middot; Junho 2026</div>
+    <input id="pwd-input" type="password" placeholder="Senha de acesso">
+    <br>
+    <button class="pwd-btn" onclick="checkPassword()">Acessar</button>
+    <div id="pwd-error">Senha incorreta. Tente novamente.</div>
+  </div>
+</div>
+
+<div id="main-content">
+
+  <!-- HERO -->
+  <section class="hero">
+    <div class="hero-eyebrow">Planejamento Financeiro Pessoal &middot; Gr&atilde;o | Grupo Primo</div>
+    <h1 class="hero-name">Camilla &amp; Elvis</h1>
+    <div class="hero-meta">Brasil &middot; Junho 2026 &middot; Matheus Melo</div>
+    <p class="hero-statement">
+      O aporte deste m&ecirc;s foi dividido com inten&ccedil;&atilde;o clara:
+      garantir que os projetos de voc&ecirc;s cheguem no prazo certo
+      e que o restante trabalhe pela constru&ccedil;&atilde;o do patrim&ocirc;nio de longo prazo.
+    </p>
+    <div class="hero-badge">Recomenda&ccedil;&atilde;o de Aporte &middot; Junho 2026</div>
+  </section>
+
+  <!-- APORTE -->
+  <section class="section">
+    <div class="section-label">Recomenda&ccedil;&atilde;o</div>
+    <h2 class="section-title">O que fazer com os R$&nbsp;3.830</h2>
+    <div class="divider"></div>
+    <p class="section-sub">
+      Primeiro os projetos, depois os investimentos. A parcela mensal necess&aacute;ria
+      para cada objetivo foi calculada para que voc&ecirc;s cheguem ao prazo sem aperto.
+      O que sobra vai para a carteira estrutural.
+    </p>
+
+    <div class="aporte-destaque">
+      <div class="aporte-label">Aporte Total do M&ecirc;s</div>
+      <div class="aporte-valor">R$&nbsp;3.830</div>
+      <div class="aporte-sub">4 destinos &middot; projetos + carteira estrutural</div>
+    </div>
+
+    <!-- PROJETOS -->
+    <div class="bloco-header">
+      <span class="bloco-header-label">Projetos de vida</span>
+      <div class="bloco-header-line"></div>
+    </div>
+
+    <div class="ativos-grid">
+
+      <div class="ativo-card">
+        <div class="ativo-num">01</div>
+        <div class="ativo-body">
+          <div class="ativo-classe-badge classe-projeto">Projeto</div>
+          <div class="ativo-ticker">Reforma da Casa</div>
+          <div class="ativo-nome">Trend DI &middot; 45.278.833/0001-58</div>
+          <div class="ativo-desc">
+            Faltam R$&nbsp;3.687 para completar o objetivo. Com prazo em outubro/2026
+            (4 meses), a parcela ideal &eacute; de R$&nbsp;922/m&ecirc;s para chegar no tempo certo.
+          </div>
+          <div class="projeto-progress">
+            <div class="progress-track">
+              <div class="progress-fill" style="width:81.6%"></div>
+            </div>
+            <div class="progress-labels">
+              <span>R$&nbsp;16.313 alocados</span>
+              <span>Meta: R$&nbsp;20.000 &middot; out/2026</span>
+            </div>
+          </div>
+        </div>
+        <div class="ativo-right">
+          <div class="ativo-valor">R$&nbsp;922</div>
+          <div class="ativo-pct">24,1% do aporte</div>
+        </div>
+      </div>
+
+      <div class="ativo-card">
+        <div class="ativo-num">02</div>
+        <div class="ativo-body">
+          <div class="ativo-classe-badge classe-projeto">Projeto</div>
+          <div class="ativo-ticker">Reforma da Empresa</div>
+          <div class="ativo-nome">Trend DI &middot; 45.278.833/0001-59</div>
+          <div class="ativo-desc">
+            Faltam R$&nbsp;18.581 para completar o objetivo. Com prazo em junho/2027
+            (12 meses), a parcela ideal &eacute; de R$&nbsp;1.549/m&ecirc;s para chegar sem estresse.
+          </div>
+          <div class="projeto-progress">
+            <div class="progress-track">
+              <div class="progress-fill" style="width:38.1%"></div>
+            </div>
+            <div class="progress-labels">
+              <span>R$&nbsp;11.419 alocados</span>
+              <span>Meta: R$&nbsp;30.000 &middot; jun/2027</span>
+            </div>
+          </div>
+        </div>
+        <div class="ativo-right">
+          <div class="ativo-valor">R$&nbsp;1.549</div>
+          <div class="ativo-pct">40,4% do aporte</div>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- CARTEIRA ESTRUTURAL -->
+    <div class="bloco-header">
+      <span class="bloco-header-label">Carteira estrutural</span>
+      <div class="bloco-header-line"></div>
+    </div>
+
+    <div class="ativos-grid">
+
+      <div class="ativo-card">
+        <div class="ativo-num">03</div>
+        <div class="ativo-body">
+          <div class="ativo-classe-badge classe-int">Internacional</div>
+          <div class="ativo-ticker">WRLD11</div>
+          <div class="ativo-nome">Renda Vari&aacute;vel Global</div>
+          <div class="ativo-desc">
+            ETF que replica a bolsa mundial. Principal gap da carteira estrutural de voc&ecirc;s
+            em rela&ccedil;&atilde;o ao alvo da Carteira Moderada. Comprar via home broker na Rico.
+          </div>
+          <div class="ativo-onde">&#128205; Home broker (Rico)</div>
+        </div>
+        <div class="ativo-right">
+          <div class="ativo-valor">R$&nbsp;830</div>
+          <div class="ativo-pct">21,7% do aporte</div>
+        </div>
+      </div>
+
+      <div class="ativo-card">
+        <div class="ativo-num">04</div>
+        <div class="ativo-body">
+          <div class="ativo-classe-badge classe-int">Internacional</div>
+          <div class="ativo-ticker">USDB11</div>
+          <div class="ativo-nome">Renda Fixa Global (d&oacute;lar)</div>
+          <div class="ativo-desc">
+            ETF de renda fixa em d&oacute;lar. Complementa o WRLD11 com menor volatilidade
+            e prote&ccedil;&atilde;o cambial. J&aacute; presente na carteira &mdash; refor&ccedil;ando a posi&ccedil;&atilde;o.
+          </div>
+          <div class="ativo-onde">&#128205; Home broker (Rico)</div>
+        </div>
+        <div class="ativo-right">
+          <div class="ativo-valor">R$&nbsp;529</div>
+          <div class="ativo-pct">13,8% do aporte</div>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- BARRA RESUMO -->
+    <div class="barra-card">
+      <div class="barra-titulo">Distribui&ccedil;&atilde;o do aporte</div>
+      <div class="barra-track">
+        <div class="barra-seg" style="width:24.1%;background:#C9A84C;border-radius:99px 0 0 99px;"></div>
+        <div class="barra-seg" style="width:40.4%;background:#8B6E2A;"></div>
+        <div class="barra-seg" style="width:21.7%;background:#4CAF8C;"></div>
+        <div class="barra-seg" style="width:13.8%;background:#2d7a5f;border-radius:0 99px 99px 0;"></div>
+      </div>
+      <div class="barra-legenda">
+        <div class="barra-item"><div class="barra-dot" style="background:#C9A84C"></div>Reforma da Casa &mdash; R$&nbsp;922</div>
+        <div class="barra-item"><div class="barra-dot" style="background:#8B6E2A"></div>Reforma da Empresa &mdash; R$&nbsp;1.549</div>
+        <div class="barra-item"><div class="barra-dot" style="background:#4CAF8C"></div>WRLD11 &mdash; R$&nbsp;830</div>
+        <div class="barra-item"><div class="barra-dot" style="background:#2d7a5f"></div>USDB11 &mdash; R$&nbsp;529</div>
+      </div>
+      <div class="total-box">
+        <div class="total-box-label">Total do aporte</div>
+        <div class="total-box-valor">R$&nbsp;3.830</div>
+      </div>
+    </div>
+
+  </section>
+
+  <!-- FOOTER -->
+  <footer class="footer">
+    <div class="footer-logo">MM</div>
+    <div class="footer-name">Matheus Melo</div>
+    <div class="footer-title">Planejador Financeiro Pessoal</div>
+    <div class="footer-brand">Gr&atilde;o | Grupo Primo</div>
+    <div class="footer-disclaimer">
+      Este documento &eacute; confidencial e foi elaborado exclusivamente para Camilla &amp; Elvis.
+      As recomenda&ccedil;&otilde;es t&ecirc;m car&aacute;ter fiduci&aacute;rio e s&atilde;o baseadas
+      nas informa&ccedil;&otilde;es coletadas at&eacute; junho de 2026.
+    </div>
+  </footer>
+
+</div>
+
+<script>
+  function checkPassword() {
+    var v = document.getElementById("pwd-input").value;
+    if (v === "camilla2026") {
+      document.getElementById("password-overlay").style.display = "none";
+      document.getElementById("main-content").style.display = "block";
+    } else {
+      document.getElementById("pwd-error").style.display = "block";
+    }
+  }
+  document.getElementById("pwd-input").addEventListener("keypress", function(e) {
+    if (e.key === "Enter") checkPassword();
+  });
+</script>
+</body>
+</html>
